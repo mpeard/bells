@@ -1,19 +1,19 @@
 class Path
-  def initialize(p = [[ 4, 6, 7, 5, 3, 1, 2 ]])
+  def initialize(p = ["  4675321"])
     @path = p
     test_truth
   end
   
   def plain
-    Path.new(@path.clone << @path.last.rotate)
+    Path.new(@path.clone << (["  "] + [ 1, 2, 3, 4, 5, 6, 0 ].map{ |x| @path.last.chars.last(7)[x] }).join )
   end
   
   def bob
-    Path.new(@path.clone << [ 3, 1, 2, 4, 5, 6, 0 ].map{ |x| @path.last[x] } )
+    Path.new(@path.clone << (["- "] + [ 3, 1, 2, 4, 5, 6, 0 ].map{ |x| @path.last.chars.last(7)[x] }).join )
   end
   
   def rounds?
-    @path.first.first(4) == @path.last.first(4)
+    @path.first[2,4] == @path.last[2,4]
   end
   
   def true?
@@ -33,17 +33,15 @@ class Path
     @sixes = {}
     
     @path.each do |s|
-      @true = false if @sixes[s.first(4).join]
-      @sixes[s.first(4).join] = true
+      @true = false if @sixes[s[2,4]]
+      @sixes[s[2,4]] = true
     end
   end
   
   def self.read(filename)
     path = []
-    sixes = []
-    
     File.open(filename, 'r').each do |l|
-      path << l.chars.map{ |x| x.to_i }
+      path << l.strip
     end
     
     Path.new path
@@ -52,7 +50,7 @@ class Path
   def write(filename)
     File.open(filename, 'w') do |f|
       @path.each do |p|
-        f.puts p.join
+        f.puts p
       end
     end
   end
